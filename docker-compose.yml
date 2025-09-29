@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rental_accounting
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -lc "pip install -r backend/requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    volumes:
+      - ./backend:/app
+      - ./frontend:/frontend
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/rental_accounting
+      - STATIC_DIR=/frontend
+      - ALLOWED_ORIGINS=http://localhost:8000,http://localhost:5173
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  dbdata:

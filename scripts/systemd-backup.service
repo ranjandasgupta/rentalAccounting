@@ -1,0 +1,9 @@
+[Unit]
+Description=Rental Accounting DB Backup
+
+[Service]
+Type=oneshot
+Environment=DB_URL=postgresql://postgres:postgres@localhost:5432/rental_accounting
+Environment=BACKUP_DIR=/mnt/nas/rental_accounting_backups
+ExecStart=/usr/bin/bash /opt/rental_accounting/scripts/backup.sh
+User=postgres

@@ -1,0 +1,3 @@
+#!/bin/bash
+#psql -h tv1 -U neeladasgupta -p 5432 -d rental_accounting
+psql postgresql://neeladasgupta:ra2122@tv1:5432/rental_accounting

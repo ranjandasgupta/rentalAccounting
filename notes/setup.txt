@@ -1,0 +1,45 @@
+
+install postgresql
+apt update
+apt upgrade
+apt install postgresql
+
+
+1. setup DB
+---------------------------
+config files are in: /etc/postgresql/14/main
+data files are in: /var/lib/postgresql/14/main
+changed to: /mnt/rnmkNAS1_pri/alldata/postgres_data/main
+
+psql template1
+\password postgres // change password
+
+postgresql.conf:
+data_directory = '/mnt/rnmkNAS1_pri/alldata/postgres_data/main'
+listen_addresses = '*'
+
+pg_hba.conf:
+host    all             all             0.0.0.0/0          md5
+
+create user & db:
+create user neeladasgupta with encrupted password 'ra2122';
+create database rental_accounting owner neeladasgupta;
+
+psql postgresql://neeladasgupta:ra2122@tv1/rental_accounting -f db/schema.sql
+psql postgresql://neeladasgupta:ra2122@tv1/rental_accounting -f db/seed.sql
+
+
+
+setup backend:
+-------------------------------
+sudo apt install python3.10-venv
+cd backend
+cp .env.example .env
+// setup .env: fix db, user etc.
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+sudo apt install uvicorn
+
